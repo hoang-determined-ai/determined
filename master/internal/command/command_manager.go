@@ -10,7 +10,8 @@ import (
 )
 
 type commandManager struct {
-	db *db.PgDB
+	db     *db.PgDB
+	logger *actor.Ref
 }
 
 func (c *commandManager) Receive(ctx *actor.Context) error {
@@ -34,7 +35,7 @@ func (c *commandManager) Receive(ctx *actor.Context) error {
 		taskID := model.NewTaskID()
 		jobID := model.NewJobID()
 		return createGenericCommandActor(
-			ctx, c.db, taskID, model.TaskTypeCommand, jobID, model.JobTypeCommand, msg,
+			ctx, c.db, c.logger, taskID, model.TaskTypeCommand, jobID, model.JobTypeCommand, msg,
 		)
 
 	default:

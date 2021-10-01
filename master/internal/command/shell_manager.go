@@ -11,7 +11,8 @@ import (
 )
 
 type shellManager struct {
-	db *db.PgDB
+	db     *db.PgDB
+	logger *actor.Ref
 }
 
 func (s *shellManager) Receive(ctx *actor.Context) error {
@@ -35,7 +36,7 @@ func (s *shellManager) Receive(ctx *actor.Context) error {
 		taskID := model.NewTaskID()
 		jobID := model.NewJobID()
 		return createGenericCommandActor(
-			ctx, s.db, taskID, model.TaskTypeShell, jobID, model.JobTypeShell, msg,
+			ctx, s.db, s.logger, taskID, model.TaskTypeShell, jobID, model.JobTypeShell, msg,
 		)
 
 	default:
