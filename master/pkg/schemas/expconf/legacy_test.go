@@ -126,7 +126,7 @@ func TestLegacyConfig(t *testing.T) {
                   type: shared_fs
                 debug: false
                 description: noop pytorch
-                entrypoint: model_def:OneVarPytorchTrial
+                entrypoint: model_def:OneVarPyTorchTrial
                 environment:
                   environment_variables:
                     cpu:
@@ -245,7 +245,7 @@ func TestLegacyConfig(t *testing.T) {
                   type: shared_fs
                 debug: false
                 description: rb-test-dist-ctx
-                entrypoint: model_def:OneVarPytorchTrial
+                entrypoint: model_def:OneVarPyTorchTrial
                 environment:
                   add_capabilities: []
                   drop_capabilities: []
