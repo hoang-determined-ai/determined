@@ -4,6 +4,7 @@ import (
 	"github.com/determined-ai/determined/master/pkg/model"
 
 	"github.com/determined-ai/determined/master/internal/db"
+	"github.com/determined-ai/determined/master/internal/task"
 	"github.com/determined-ai/determined/master/pkg/actor"
 	"github.com/determined-ai/determined/master/pkg/tasks"
 	"github.com/determined-ai/determined/proto/pkg/apiv1"
@@ -11,8 +12,8 @@ import (
 )
 
 type shellManager struct {
-	db     *db.PgDB
-	logger *actor.Ref
+	db         *db.PgDB
+	taskLogger *task.Logger
 }
 
 func (s *shellManager) Receive(ctx *actor.Context) error {
@@ -36,7 +37,7 @@ func (s *shellManager) Receive(ctx *actor.Context) error {
 		taskID := model.NewTaskID()
 		jobID := model.NewJobID()
 		return createGenericCommandActor(
-			ctx, s.db, s.logger, taskID, model.TaskTypeShell, jobID, model.JobTypeShell, msg,
+			ctx, s.db, s.taskLogger, taskID, model.TaskTypeShell, jobID, model.JobTypeShell, msg,
 		)
 
 	default:
