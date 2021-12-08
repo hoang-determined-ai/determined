@@ -8,7 +8,7 @@
 
 This document lists how you should implement the PyTorch Lightning API. You need to implement a
 trial class that inherits :class:`~determined.pytorch.lightning.LightningAdapter` and specify it as
-the entrypoint in the :doc:`experiment configuration </training-apis/experiment-config>`.
+the entrypoint in the :doc:`experiment configuration </configurations/experiment-config>`.
 
 PyTorch Lightning Adapter, defined here as ``LightningAdapter``, provides a quick way to train your
 PyTorch Lightning models with all the Determined features, such as mid-epoch preemption, easy
@@ -108,7 +108,7 @@ To learn about this API, you can start by reading the trial definitions from the
 
 .. note::
 
-   Before loading data, read this document :doc:`/prepare-data/index` to understand how to work with
+   Before loading data, read this document :doc:`/pre-training-setup/prepare-data` to understand how to work with
    different sources of data.
 
 Loading your dataset when using the :doc:`/training-apis/api-pytorch-lightning` works the same way

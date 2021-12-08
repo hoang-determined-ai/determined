@@ -1,0 +1,55 @@
+###################
+ Pre-training Setup
+###################
+
+Preparing your environment and data are two common steps prior to training your model on Determined. Below we review
+the standard approaches to these steps, as well as link to advanced guides with additional options.
+
+***********
+Environment
+***********
+
+Determined launches workloads using Docker containers. By default, workloads execute inside a
+Determined-provided container that includes common deep learning libraries and frameworks. The default containers
+can be found on the Determined Docker Hub with tags for each Determined version:
+
+* `Default containers for CPU training <https://hub.docker.com/r/determinedai/environments/tags?page=1&name=cpu>`__
+* `Default containers for GPU training <https://hub.docker.com/r/determinedai/environments/tags?page=1&name=gpu>`__
+
+By default, Determined will use the tag corresponding to your cluster's version. To specify a different image from
+this default, update your experiment configuration to include:
+
+.. code:: bash
+
+   environment:
+     image:
+       cpu: # full cpu image path e.g. determined/environments/<tag>
+       gpu: # full gpu image path e.g. determined/environments/<tag>
+
+If one of the images above contain your required libraries, there is no additional environment
+preparation needed.
+
+If you need to add additional packages to the training environment, review the :doc:`Custom Environments
+</pre-training-setup/custom-env>` guide.
+
+****
+Data
+****
+
+For initial experimentation, the easiest way to include data in your experiment is to add the data to the same
+directory as your model code. When you create a new experiment, all files in your model code directory will be
+packaged and uploaded to the Determined cluster, assuming the package is ``< 96MB``.
+
+If your dataset is larger than ``96MB``, you can use a :ref:`Startup Hook <startup-hooks>` shell script to download
+the dataset prior to training.
+
+For production data source options such as Object Store (S3, GCS) or Distributed File Systems (NFS, Ceph), review the
+:doc:`Data Preparation </pre-training-setup/prepare-data>` guide.
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   custom-env
+   prepare-data
+

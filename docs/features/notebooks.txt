@@ -1,8 +1,8 @@
 .. _notebooks:
 
-###########
- Notebooks
-###########
+##################
+ Jupyter Notebooks
+##################
 
 `Jupyter Notebooks <https://jupyter.org/>`__ are a convenient way to develop and debug machine
 learning models, visualize the behavior of trained models, or even manage the training lifecycle of

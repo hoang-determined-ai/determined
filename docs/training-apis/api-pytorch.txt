@@ -8,7 +8,7 @@
 
 This document lists how you should implement the PyTorch API. You need to implement a trial class
 that inherits :class:`~determined.pytorch.PyTorchTrial` and specify it as the entrypoint in the
-:doc:`experiment configuration </training-apis/experiment-config>`.
+:doc:`experiment configuration </configurations/experiment-config>`.
 
 Once we inherit this class, we will be required to override specific functions that represent the
 components that are used in the training procedure. When starting a new port, it is helpful to work
@@ -56,7 +56,7 @@ To learn about this API, you can start by reading the trial definitions from the
 
 .. note::
 
-   Before loading data, read this document :doc:`/prepare-data/index` to understand how to work with
+   Before loading data, read this document :doc:`/pre-training-setup/prepare-data` to understand how to work with
    different sources of data.
 
 There are two ways to download your dataset in the PyTorch API:
@@ -93,7 +93,7 @@ directories on different ranks. See the following code example:
 
 .. note::
 
-   Before loading data, read this document :doc:`/prepare-data/index` to understand how to work with
+   Before loading data, read this document :doc:`/pre-training-setup/prepare-data` to understand how to work with
    different sources of data.
 
 Loading data into :class:`~determined.pytorch.PyTorchTrial` models is done by defining two
@@ -110,7 +110,7 @@ to the :meth:`~determined.pytorch.PyTorchTrial.train_batch` and
 :meth:`~determined.pytorch.PyTorchTrial.evaluate_batch` functions. The batch size of the data loader
 will be set to the per-slot batch size, which is calculated based on ``global_batch_size`` and
 ``slots_per_trial`` as defined in the :doc:`experiment configuration
-</training-apis/experiment-config>`.
+</configurations/experiment-config>`.
 
 See the following code as an example:
 

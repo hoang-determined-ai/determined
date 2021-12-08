@@ -13,6 +13,9 @@ import sys
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
+# Increase recursion limit
+sys.setrecursionlimit(1500)
+
 project = "Determined"
 html_title = "Determined AI Documentation"
 copyright = "2020, Determined AI"
@@ -73,6 +76,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_sitemap",
     "sphinx_reredirects",
+    "sphinx_inline_tabs",
 ]
 
 # Our custom sphinx extension uses this value to decide where to look for

@@ -1429,7 +1429,7 @@ to the following changes:
    cancel`` or ``det experiment kill``). The format of the experiment config file has changed --
    configuration files that worked with previous versions of Determined will need to be updated to
    work with Determined >= 0.13.0. For more details, see the notes below or the `migration guide
-   <https://docs.determined.ai/0.17.3/training-apis/experiment-config.html#migration-from-v0-12-13-to-v0-13-0>`_.
+   <https://docs.determined.ai/0.17.3/configurations/experiment-config.html#migration-from-v0-12-13-to-v0-13-0>`_.
 
 -  The WebUI has been partially rewritten, moving several components that were implemented in Elm to
    now being written in React and TypeScript. As part of this change, many improvements to the
@@ -1458,7 +1458,7 @@ to the following changes:
 -  **Remove Steps from the UX:** Remove the concept of a "step" from the CLI, WebUI, and
    configuration files. Add new configuration settings to allow settings previously in terms of
    steps to be configured instead in terms of records, batches or epochs. See the `migration guide
-   <https://docs.determined.ai/0.17.3/training-apis/experiment-config.html#migration-from-v0-12-13-to-v0-13-0>`_
+   <https://docs.determined.ai/0.17.3/configurations/experiment-config.html#migration-from-v0-12-13-to-v0-13-0>`_
    for details on migrating from the old configuration to the new configuration.
 
    -  Many configuration settings can now be set in terms of records, batches or epochs. For

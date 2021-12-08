@@ -410,3 +410,13 @@ To uninstall Determined run:
 -  :ref:`helm-config`
 -  :ref:`determined-on-kubernetes`
 -  :ref:`custom-pod-specs`
+
+************
+ Learn More
+************
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   *

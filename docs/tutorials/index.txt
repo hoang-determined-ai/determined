@@ -4,22 +4,21 @@
  Tutorials
 ###########
 
-Tutorials are simple step-by-step guides about getting started with different topics of Determined.
+Tutorials are simple step-by-step guides to showcase how standard models are run in Determined. For running your
+own custom model, we recommend reviewing tutorials and examples to get an idea of what is possible, then following
+the **PRE-TRAINING**, **TRAINING**, and **POST-TRAINING** sections for details on each component of training models in
+Determined.
 
-*********
- PyTorch
-*********
+.. tab:: PyTorch
 
-For PyTorch users, you can start with :doc:`the tutorial that uses the simplest model MNIST
-</tutorials/tf-mnist-tutorial>`. If you come with the code that is already able to run, you can
-follow :doc:`/tutorials/pytorch-porting-tutorial` to port your code to use our Pytorch APIs.
+    For PyTorch users, you can start with :doc:`the tutorial that uses the simplest model MNIST
+    </tutorials/tf-mnist-tutorial>`. For a more detailed tutorial with a real-world model, you can
+    follow :doc:`/tutorials/pytorch-porting-tutorial` to port your code to use our Pytorch APIs.
 
-******************
- TensorFlow Keras
-******************
+.. tab:: TensorFlow Keras
 
-For TensorFlow Keras users, you can start with :doc:`the tutorial that uses the simplest model MNIST
-</tutorials/pytorch-mnist-tutorial>`.
+    For TensorFlow Keras users, you can start with :doc:`the tutorial that uses the simplest model MNIST
+    </tutorials/pytorch-mnist-tutorial>`.
 
 ************
  Learn More

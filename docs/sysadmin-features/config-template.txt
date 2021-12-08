@@ -1,8 +1,8 @@
 .. _config-template:
 
-#########################
- Configuration Templates
-#########################
+####################################
+ Default Job Configuration Templates
+####################################
 
 At a typical organization, many Determined configuration files will contain similar settings. For
 example, all of the training workloads run at a given organization might use the same checkpoint

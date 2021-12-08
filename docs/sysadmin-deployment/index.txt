@@ -1,0 +1,46 @@
+.. _install-cluster:
+
+##########
+Deployment
+##########
+
+Two main components are required to use Determined: the :ref:`Determined CLI <install-cli>` and a
+Determined cluster. All users should install the Determined CLI on their
+local development machine. The Determined cluster should be installed in your training environment,
+which might be your local development machine, an on-premise GPU cluster, or resources in the cloud.
+
+For a single user with a local machine, the easiest way is likely using the Determined Deploy package to install
+the Determined CLI and start a cluster on a local machine:
+
+****************************
+ Install Determined Locally
+****************************
+
+Use the following code to install Determined and start a cluster locally.
+
+.. code:: bash
+
+   # Install the Determined library
+   pip install determined
+
+   # Start a cluster.
+   det deploy local cluster-up
+
+   # Use CLI to check resources on cluster
+   det slot
+
+**********************
+ Advanced Deployments
+**********************
+
+For more advanced deployments to an on-premise hardware cluster, cloud environment, or Kubernetes, refer to the
+following:
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   On-Premise <sysadmin-deploy-on-prem/index>
+   AWS <sysadmin-deploy-on-gcp/index>
+   GCP <sysadmin-deploy-on-aws/index>
+   Kubernetes <sysadmin-deploy-on-k8s/index>

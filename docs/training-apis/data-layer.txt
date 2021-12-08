@@ -6,7 +6,7 @@
 
 .. note::
 
-   Before loading data, read this document :doc:`/prepare-data/index` to understand how to work with
+   Before loading data, read this document :doc:`/pre-training-setup/prepare-data` to understand how to work with
    different sources of data.
 
 The data layer in Determined enables high-performance data loading for deep learning training.

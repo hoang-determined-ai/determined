@@ -1,0 +1,319 @@
+.. _aws-manual-deployment:
+
+#####################
+AWS Manual Deployment
+#####################
+
+Database
+========
+
+Determined requires a PostgreSQL-compatible database, such as AWS Aurora. Configure the cluster to
+use the database by including the database information in ``master.yaml``. Make sure to create a
+database before running the Determined cluster (e.g., ``CREATE DATABASE <database-name>``).
+
+Example ``master.yaml`` snippet:
+
+.. code:: yaml
+
+   db:
+     user: "${database-user}"
+     password: "${database-password}"
+     host: "${database-hostname}"
+     port: 5432
+     name: "${database-name}"
+
+Security Groups
+===============
+
+VPC Security Groups provide a set of rules for inbound and outbound network traffic. The
+requirements for a Determined cluster are:
+
+Master
+------
+
+-  Egress on all ports to agent security group
+-  Egress on all ports to the Internet
+-  Ingress on port 8080 for access the Determined WebUI and REST APIs
+-  Ingress on port 22 for SSH (recommended but not required)
+-  Ingress on all ports from agent security group
+
+Example:
+
+.. code:: yaml
+
+   MasterSecurityGroupEgress:
+     Type: AWS::EC2::SecurityGroupEgress
+     Properties:
+       GroupId: !GetAtt MasterSecurityGroup.GroupId
+       DestinationSecurityGroupId: !GetAtt AgentSecurityGroup.GroupId
+       FromPort: 0
+       ToPort: 65535
+       IpProtocol: tcp
+
+   MasterSecurityGroupInternet:
+     Type: AWS::EC2::SecurityGroupEgress
+     Properties:
+       GroupId: !GetAtt MasterSecurityGroup.GroupId
+       CidrIp: 0.0.0.0/0
+       FromPort: 0
+       ToPort: 65535
+       IpProtocol: tcp
+
+   MasterSecurityGroupIngress:
+     Type: AWS::EC2::SecurityGroupIngress
+     Properties:
+       GroupId: !GetAtt MasterSecurityGroup.GroupId
+       FromPort: 8080
+       ToPort: 8080
+       IpProtocol: tcp
+       SourceSecurityGroupId: !GetAtt AgentSecurityGroup.GroupId
+
+   MasterSecurityGroupIngressUI:
+     Type: AWS::EC2::SecurityGroupIngress
+     Properties:
+       GroupId: !GetAtt MasterSecurityGroup.GroupId
+       FromPort: 8080
+       ToPort: 8080
+       IpProtocol: tcp
+       CidrIp: !Ref InboundCIDRRange
+
+   MasterSSHIngress:
+     Type: AWS::EC2::SecurityGroupIngress
+     Properties:
+       GroupId: !GetAtt MasterSecurityGroup.GroupId
+       IpProtocol: tcp
+       FromPort: 22
+       ToPort: 22
+       CidrIp: !Ref InboundCIDRRange
+
+Agent
+-----
+
+-  Egress on all ports to the Internet
+-  Ingress on all ports from master security group
+-  Ingress on all ports from agent security group
+-  Ingress on port 22 for SSH (recommended but not required)
+
+Example:
+
+.. code:: yaml
+
+   AgentSecurityGroupEgress:
+     Type: AWS::EC2::SecurityGroupEgress
+     Properties:
+       GroupId: !GetAtt AgentSecurityGroup.GroupId
+       CidrIp: 0.0.0.0/0
+       FromPort: 0
+       ToPort: 65535
+       IpProtocol: tcp
+
+   AgentSecurityGroupIngressMaster:
+     Type: AWS::EC2::SecurityGroupIngress
+     Properties:
+       GroupId: !GetAtt AgentSecurityGroup.GroupId
+       FromPort: 0
+       ToPort: 65535
+       IpProtocol: tcp
+       SourceSecurityGroupId: !GetAtt MasterSecurityGroup.GroupId
+
+   AgentSecurityGroupIngressAgent:
+     Type: AWS::EC2::SecurityGroupIngress
+     Properties:
+       GroupId: !GetAtt AgentSecurityGroup.GroupId
+       FromPort: 0
+       ToPort: 65535
+       IpProtocol: tcp
+       SourceSecurityGroupId: !GetAtt AgentSecurityGroup.GroupId
+
+   AgentSSHIngress:
+     Type: AWS::EC2::SecurityGroupIngress
+     Properties:
+       GroupId: !GetAtt AgentSecurityGroup.GroupId
+       IpProtocol: tcp
+       FromPort: 22
+       ToPort: 22
+       CidrIp: !Ref InboundCIDRRange
+
+IAM Roles
+=========
+
+IAM roles comprise IAM policies, which provide access to AWS APIs such as the EC2 or S3 API. The IAM
+policies needed for the Determined cluster are:
+
+Master
+------
+
+-  Allow EC2 to assume role
+-  Allow EC2 to describe, create, and terminate instances with agent role
+-  Allow EC2 to describe, create, and terminate spot instance requests (only required if using spot
+   instances)
+
+.. code:: yaml
+
+   MasterRole:
+     Type: AWS::IAM::Role
+     Properties:
+       AssumeRolePolicyDocument:
+         Version: 2012-10-17
+         Statement:
+           - Effect: Allow
+             Principal:
+               Service:
+                 - ec2.amazonaws.com
+             Action:
+               - sts:AssumeRole
+       Policies:
+         - PolicyName: determined-agent-policy
+           PolicyDocument:
+             Version: 2012-10-17
+             Statement:
+               - Effect: Allow
+                 Action:
+                   - ec2:DescribeInstances
+                   - ec2:TerminateInstances
+                   - ec2:CreateTags
+                   - ec2:RunInstances
+                   - ec2:CancelSpotInstanceRequests      # Only required if using spot instances
+                   - ec2:RequestSpotInstances            # Only required if using spot instances
+                   - ec2:DescribeSpotInstanceRequests    # Only required if using spot instances
+                 Resource: "*"
+         - PolicyName: pass-role
+           PolicyDocument:
+             Version: 2012-10-17
+             Statement:
+               - Effect: Allow
+                 Action: iam:PassRole
+                 Resource: !GetAtt AgentRole.Arn
+
+Agent
+-----
+
+-  Allow EC2 to assume role
+-  Allow S3 access for checkpoint storage
+-  Allow agent instance to describe instances
+
+.. code:: yaml
+
+   AgentRole:
+     Type: AWS::IAM::Role
+     Properties:
+       AssumeRolePolicyDocument:
+         Version: 2012-10-17
+         Statement:
+           - Effect: Allow
+             Principal:
+               Service:
+                 - ec2.amazonaws.com
+             Action:
+               - sts:AssumeRole
+       Policies:
+         - PolicyName: agent-s3-policy
+           PolicyDocument:
+             Version: 2012-10-17
+             Statement:
+               - Effect: Allow
+                 Action: "s3:*"
+                 Resource: "*"
+         - PolicyName: determined-ec2
+           PolicyDocument:
+             Version: 2012-10-17
+             Statement:
+               - Effect: Allow
+                 Action:
+                   - ec2:DescribeInstances
+                 Resource: "*"
+
+Master Node
+===========
+
+The master node should be deployed on an EC2 instance with at least 4 CPUs (Intel Broadwell or
+later), 8GB of RAM, and 200GB of disk storage. This roughly corresponds to an EC2 t2.large instance
+or better. The AMI should be the default Ubuntu 18.04 AMI.
+
+Running Determined
+------------------
+
+#. Install Docker and create the ``determined`` Docker network.
+
+   .. code::
+
+      apt-get remove docker docker-engine docker.io containerd runc
+      apt-get update
+      apt-get install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg-agent \
+        software-properties-common
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+      add-apt-repository \
+        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+        $(lsb_release -cs) \
+        stable"
+      apt-get update
+      apt-get install -y docker-ce docker-ce-cli containerd.io
+
+      docker network create determined
+
+#. Configure the cluster with ``master.yaml``. See :ref:`cluster-configuration` for more
+   information.
+
+   Notes:
+
+   -  ``image_id`` should be the latest Determined agent AMI.
+   -  ``instance_type`` should be any p2 or p3 EC2 instance type.
+   -  For more information about resource pools, see :ref:`resource-pools`
+
+   .. warning::
+
+      An important assumption of Determined with Dynamic Agents is that any EC2 instances with the
+      configured tag_key:tag_value pair are managed by the Determined master. This pair should be
+      unique to your Determined installation. If it is not, Determined may inadvertently manage your
+      non-Determined EC2 instances.
+
+      If using spot instances, Determined also assumes that any EC2 spot instance requests with the
+      configured tag_key:tag_value pair are managed by the Determined master.
+
+   .. code:: yaml
+
+      checkpoint_storage:
+        type: s3
+        bucket: ${CheckpointBucket}
+
+      db:
+        user: postgres
+        password: "${DBPassword}"
+        host: "${Database.Endpoint.Address}"
+        port: 5432
+        name: determined
+
+      resource_pools:
+        - pool_name: default
+          description: The default resource pool
+          provider:
+            iam_instance_profile_arn: ${AgentInstanceProfile.Arn}
+            image_id: ${AgentAmiId}
+            agent_docker_image: determinedai/determined-agent:${Version}
+            instance_name: determined-agent-${UserName}
+            instance_type: ${AgentInstanceType}
+            master_url: http://local-ipv4:8080
+            max_idle_agent_period: ${MaxIdleAgentPeriod}
+            max_instances: ${MaxInstances}
+            network_interface:
+              public_ip: true
+              security_group_id: ${AgentSecurityGroup.GroupId}
+            type: aws
+            ssh_key_name: ${Keypair}
+            tag_key: determined-${UserName}
+            tag_value: determined-${UserName}-agent
+
+#. Start the Determined master.
+
+   .. code::
+
+      docker run \
+        --rm \
+        --network determined \
+        -p 8080:8080 \
+        -v master.yaml:/etc/determined/master.yaml \
+        determinedai/determined-master:${Version}

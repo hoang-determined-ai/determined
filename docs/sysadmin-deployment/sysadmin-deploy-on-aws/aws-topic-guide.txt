@@ -71,13 +71,3 @@ Periphery Resources
 -  **Amazon Simple Storage Service (S3) Bucket**: The Determined cluster can leverage an existing S3
    bucket (assuming it has the correct associated permissions), or the CloudFormation script can
    create a bucket with the cluster.
-
-************
- Learn More
-************
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   *
